@@ -39,18 +39,6 @@ const tiers = [
     buttonText: 'Get started',
     buttonVariant: 'contained',
   },
-//   {
-//     title: 'Enterprise',
-//     price: '30',
-//     description: [
-//       '50 users included',
-//       '30 GB of storage',
-//       'Help center access',
-//       'Phone & email support',
-//     ],
-//     buttonText: 'Contact us',
-//     buttonVariant: 'outlined',
-//   },
 ];
 
 
