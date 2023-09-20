@@ -113,6 +113,11 @@ const navigate = useNavigate();
                 <MuiTelInput label= "Phone number" value={phone!} onChange={handlePhone} />
               </Grid>
             </Grid>
+            <Grid
+              item
+              xs={12}
+              md={6}
+            >
             <Button
               type="submit"
               fullWidth
@@ -122,6 +127,14 @@ const navigate = useNavigate();
             >
               Start Quiz
             </Button>
+            <Button
+              fullWidth
+              href="/"
+              variant="outlined"
+              sx={{mt: 3, mb: 2}}>
+                Cancel
+              </Button>
+            </Grid>
           </Box>
         </Box>
       </Container>
