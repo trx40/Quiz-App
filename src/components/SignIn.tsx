@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,  } from "react-router-dom";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
@@ -18,8 +18,9 @@ const defaultTheme = createTheme({
 });
 
 export default function SignIn() {
-  const [username, setUsername] = useState("");
+  const [userName, setUserName] = useState<string>("");
   const navigate = useNavigate()
+  const data = userName
   const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
     ...theme.typography.body2,
@@ -31,11 +32,11 @@ export default function SignIn() {
     event.preventDefault();
     
     console.log("Submit Signin")
-    navigate('/form')
+    navigate('/form', { state: data })
   };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setUsername(event.currentTarget.value);
+    setUserName(event.currentTarget.value);
   };
 
   return (
@@ -78,7 +79,7 @@ export default function SignIn() {
               id="email"
               label="Username"
               name="username"
-              value={username}
+              value={userName}
               onChange={handleChange}
             />
 
@@ -87,7 +88,7 @@ export default function SignIn() {
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
-              disabled = {username ? false : true}
+              disabled = {userName ? false : true}
               
             >
               Sign In

@@ -1,6 +1,7 @@
-import { SetStateAction, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Dayjs } from "dayjs";
+import dayjs from "dayjs";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
@@ -12,7 +13,7 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { DatePicker } from "@mui/x-date-pickers";
-
+import { submitForm, getFormData, updateForm } from "../../api"; // Import the API service
 
 const defaultTheme = createTheme({
   palette: {
@@ -20,43 +21,80 @@ const defaultTheme = createTheme({
   },
 });
 
+export interface FormData {
+  username?: string;
+  phone: string;
+  name: string;
+  email: string;
+  date: string | Dayjs;
+}
+
 export default function Form() {
-  const [name, setName] = useState<string | null>("");
-  const [email, setEmail] = useState<string | null>("");
-  const [date, setDate] = useState<Dayjs | string| null>(null);
-  const [phone, setPhone] = useState<string>("+91")
-const navigate = useNavigate();
+  // const [name, setName] = useState<string | null>("")
+  // const [email, setEmail] = useState<string | null>("");
+  // const [date, setDate] = useState<Dayjs | string| null>(null);
+  // const [phone, setPhone] = useState<string>("+91")
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    console.log("redirecting")
-    localStorage.setItem("Name", name!)
-    localStorage.setItem("Email", email!)
-    // localStorage.setItem("Date", date! as unknown as string)
-    localStorage.setItem("Phone", phone!)
-    navigate('/quiz')
+  const navigate = useNavigate();
+  const location = useLocation();
+  const username = location.state;
+  console.log(username)
+  const [formData, setFormData] = useState<FormData>({
+    phone: "",
+    email: "",
+    name: "",
+    date: dayjs(),
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
   };
 
-  const handleName = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setName(event.currentTarget.value);
+  const handleDateChange = (date: string | Dayjs) => {
+    setFormData({
+      ...formData,
+      date: date,
+    });
   };
 
-  const handleEmail = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(event.currentTarget.value);
+  const handlePhoneChange = (newValue: string) => {
+    setFormData({
+      ...formData,
+      phone: newValue,
+    });
   };
 
-  const handlePhone = (value: SetStateAction<string>) => {
-    setPhone(value)
+  const handleSubmit = async () => {
+    
+    try {
+      if(username) {
+        console.log("USERNAME NOT FOUND!!!!")
+        await updateForm(username, formData);
+      } else {
+        
+        await submitForm(formData);
+      }
+      navigate('/result')
+    } catch (error) {
+      console.error("Error submitting form: ", error);
+    }
+    
   };
 
   useEffect(() => {
-    if(localStorage.getItem("Name")){
-        setName(localStorage.getItem("Name"))
-        setEmail(localStorage.getItem("Email"))
-        // setDate(localStorage.getItem("Date") as string)
-        setPhone(localStorage.getItem("Phone")!)
+    if (username) {
+      getFormData(username)
+      .then((data: FormData) => {
+        setFormData(data);
+      })
+      .catch((error: Error) => {
+        console.error("Error fetching form data: ", error);
+      });
     }
-    
   }, [])
 
   return (
@@ -90,12 +128,19 @@ const navigate = useNavigate();
                   id="name"
                   label="Name"
                   autoFocus
-                  value={name}
-                  onChange={handleName}
+                  value={formData.name}
+                  onChange={handleChange}
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
-                <DatePicker label="Date of Birth" value={date} onChange={(newValue) => setDate(newValue)} defaultValue={date} />
+                <DatePicker
+                  label="Date of Birth"
+                  value={formData.date}
+                  onChange={(newDate) => {
+                    handleDateChange(dayjs(newDate));
+                  }}
+                  defaultValue={dayjs('2022-04-17')}
+                />
               </Grid>
               <Grid item xs={12}>
                 <TextField
@@ -105,33 +150,43 @@ const navigate = useNavigate();
                   label="Email Address"
                   name="email"
                   autoComplete="email"
-                  value={email}
-                  onChange={handleEmail}
+                  value={formData.email}
+                  onChange={handleChange}
                 />
               </Grid>
               <Grid item xs={12}>
-                <MuiTelInput label= "Phone number" value={phone!} onChange={handlePhone} />
+                <MuiTelInput
+                  label="Phone number"
+                  value={formData.phone!}
+                  onChange={(newValue) => {
+                    handlePhoneChange(newValue);
+                  }}
+                />
               </Grid>
             </Grid>
-            <Grid
-              item
-              xs={12}
-              md={6}
-            >
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
-              disabled = {(name && date && email && phone) ? false : true}
-            >
-              Start Quiz
-            </Button>
-            <Button
-              fullWidth
-              href="/"
-              variant="outlined"
-              sx={{mt: 3, mb: 2}}>
+            <Grid item xs={12} md={6}>
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                sx={{ mt: 3, mb: 2 }}
+                disabled={
+                  formData.name &&
+                  formData.date &&
+                  formData.email &&
+                  formData.phone
+                    ? false
+                    : true
+                }
+              >
+                Submit
+              </Button>
+              <Button
+                fullWidth
+                href="/"
+                variant="outlined"
+                sx={{ mt: 3, mb: 2 }}
+              >
                 Cancel
               </Button>
             </Grid>
