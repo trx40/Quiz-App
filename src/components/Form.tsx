@@ -38,7 +38,6 @@ export default function Form() {
   const navigate = useNavigate();
   const location = useLocation();
   const username = location.state;
-  console.log(username)
   const [formData, setFormData] = useState<FormData>({
     phone: "",
     email: "",
@@ -68,14 +67,13 @@ export default function Form() {
     });
   };
 
-  const handleSubmit = async () => {
-    
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
     try {
       if(username) {
-        console.log("USERNAME NOT FOUND!!!!")
+        
         await updateForm(username, formData);
       } else {
-        
         await submitForm(formData);
       }
       navigate('/result')
@@ -135,7 +133,7 @@ export default function Form() {
               <Grid item xs={12} sm={6}>
                 <DatePicker
                   label="Date of Birth"
-                  value={formData.date}
+                  value={dayjs(formData.date)}
                   onChange={(newDate) => {
                     handleDateChange(dayjs(newDate));
                   }}

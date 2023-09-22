@@ -20,10 +20,9 @@ const defaultTheme = createTheme({
 export default function SignIn() {
   const [userName, setUserName] = useState<string>("");
   const navigate = useNavigate()
-  const data = userName
   const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
-    ...theme.typography.body2,
+    ...theme.typography.body1,
     padding: theme.spacing(1),
     textAlign: "center",
     color: theme.palette.text.secondary,
@@ -32,7 +31,7 @@ export default function SignIn() {
     event.preventDefault();
     
     console.log("Submit Signin")
-    navigate('/form', { state: data })
+    navigate('/form', { state: userName })
   };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -52,15 +51,12 @@ export default function SignIn() {
           }}
         >
           <Typography variant="h1" gutterBottom>
-            Quiz App
+            Questionnaire
           </Typography>
           <Box sx={{ width: "100%", mt: 3,mb: 2 }}>
             <Stack spacing={2}>
-              <Item>You will be asked 10 questions.</Item>
-              <Item>10 points are awarded for each correct answer.</Item>
-              <Item>Each question has 3 options. You can only choose one option.</Item>
-              <Item>You can review and change answers before the quiz finishes.</Item>
-              <Item>The result will be declared at the end of the quiz.</Item>
+              <Item>You will be asked basic information for a survey</Item>
+              <Item>You can update the answers by signing in again</Item>
             </Stack>
           </Box>
           <Typography component="h1" variant="h5">
